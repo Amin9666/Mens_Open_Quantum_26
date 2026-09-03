@@ -4,6 +4,8 @@ A quantum-computing predictor for the US Open 2026 men's singles draw. Feed it a
 completed round's results, it predicts the next round using a Qiskit circuit — not
 a classical model with quantum branding.
 
+Writeup: [I don't know anything about tennis, so I built a quantum computer to predict it](ARTICLE.md)
+
 ## How it works
 
 For each next-round matchup, three player-vs-player feature advantages are computed
