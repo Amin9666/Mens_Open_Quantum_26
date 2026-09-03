@@ -10,6 +10,8 @@ Some Round 2 matches had already actually been played by the time I pulled the d
 
 Highest confidence picks: Alcaraz (93%), Medvedev (94%), Learner Tien (86%), all correct. The two closest coin flips (right around 50%) split one right, one wrong, which is exactly what a well-calibrated coin flip should do.
 
+Tennis is one of the hardest sports to call. One bad service game, one injury, one player who slept badly, and a "sure thing" is out in straight sets. There is no salary cap forcing parity and no long regular season to smooth out variance, just best-of-five on a given day. Against that, a model that has never seen a single shot hit landing 80% on real, undecided matches is a genuinely strong result, not a coin flip getting lucky.
+
 Code, circuit, and full predictions are open on GitHub: https://github.com/Amin9666/Mens_Open_Quantum_26
 
 Next week the actual Round 2 results go back in and the same circuit predicts Round 3.

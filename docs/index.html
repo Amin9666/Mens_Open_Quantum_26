@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9A%9B%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<title>80%, Called Blind</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:ital@1&display=swap">
+
+<style>
+  :root {
+    --bg: #f5f7f5;
+    --surface: #ffffff;
+    --surface-2: #eef2ee;
+    --ink: #14201a;
+    --ink-muted: #5b6b62;
+    --ink-faint: #8b9a91;
+    --border: #dbe3dd;
+    --border-strong: #c3cec6;
+    --hit: #1f7a4d;
+    --miss: #ab3b3b;
+    --quantum: #2166ac;
+    --hit-bg: #1f7a4d14;
+    --miss-bg: #ab3b3b14;
+    --quantum-bg: #2166ac14;
+    --shadow: 0 1px 2px rgba(20, 32, 26, 0.06), 0 8px 24px rgba(20, 32, 26, 0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12160f;
+      --surface: #181d16;
+      --surface-2: #1f251c;
+      --ink: #e7ece8;
+      --ink-muted: #9baaa1;
+      --ink-faint: #6d7b73;
+      --border: #2a322b;
+      --border-strong: #3a453b;
+      --hit: #3da372;
+      --miss: #d97878;
+      --quantum: #4a87c4;
+      --hit-bg: #3da37220;
+      --miss-bg: #d9787820;
+      --quantum-bg: #4a87c420;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #12160f;
+    --surface: #181d16;
+    --surface-2: #1f251c;
+    --ink: #e7ece8;
+    --ink-muted: #9baaa1;
+    --ink-faint: #6d7b73;
+    --border: #2a322b;
+    --border-strong: #3a453b;
+    --hit: #3da372;
+    --miss: #d97878;
+    --quantum: #4a87c4;
+    --hit-bg: #3da37220;
+    --miss-bg: #d9787820;
+    --quantum-bg: #4a87c420;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0 20px 100px;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  code, .mono, .tabular {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  a { color: var(--quantum); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--quantum); outline-offset: 2px; }
+
+  .masthead { padding: 56px 0 28px; border-bottom: 1px solid var(--border); }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--quantum); }
+  h1 {
+    font-size: clamp(30px, 5vw, 42px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 14px;
+  }
+  .dek { font-size: 17px; color: var(--ink-muted); max-width: 62ch; margin: 0; }
+
+  .scoreboard {
+    margin: 36px 0 8px;
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: 10px;
+    padding: 26px 28px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+  .scoreboard .fixture { font-family: 'IBM Plex Mono', monospace; font-size: 14.5px; letter-spacing: 0.01em; }
+  .scoreboard .fixture .vs { opacity: 0.55; margin: 0 8px; }
+  .scoreboard .readout { text-align: right; }
+  .scoreboard .readout .num { font-family: 'IBM Plex Mono', monospace; font-size: 40px; font-weight: 600; letter-spacing: -0.02em; }
+  .scoreboard .readout .label { font-size: 11.5px; letter-spacing: 0.03em; text-transform: uppercase; opacity: 0.6; margin-top: 2px; max-width: 34ch; }
+
+  section { padding: 44px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.005em; margin: 0 0 16px; }
+  h2 .idx { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink-faint); font-weight: 500; margin-right: 10px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  p:last-child { margin-bottom: 0; }
+
+  .thesis {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-style: italic;
+    font-size: 20px;
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 58ch;
+    margin: 8px 0 0;
+  }
+  .thesis .hl { font-style: normal; font-weight: 400; background: var(--quantum-bg); padding: 0 3px; }
+
+  .circuit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .circuit-card svg { display: block; margin: 0 auto; }
+  .circuit-caption { font-size: 13px; color: var(--ink-faint); margin-top: 12px; text-align: center; }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--quantum);
+    border-radius: 0 8px 8px 0;
+    padding: 18px 22px;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+  .callout strong { color: var(--quantum); }
+
+  .table-wrap { overflow-x: auto; margin-top: 22px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 620px; }
+  th, td { text-align: right; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  th:first-child, td:first-child { text-align: left; }
+  th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+  td { font-family: 'IBM Plex Mono', monospace; }
+  tr:last-child td { border-bottom: none; }
+
+  .conf-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .meter { width: 90px; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; flex-shrink: 0; }
+  .meter > div { height: 100%; border-radius: 3px; }
+  .meter.hit > div { background: var(--hit); }
+  .meter.miss > div { background: var(--miss); }
+
+  .badge { font-size: 10.5px; font-weight: 600; letter-spacing: 0.03em; padding: 2px 7px; border-radius: 4px; }
+  .badge.hit { color: var(--hit); background: var(--hit-bg); }
+  .badge.miss { color: var(--miss); background: var(--miss-bg); }
+
+  .caveats {
+    background: var(--surface-2);
+    border-left: 3px solid var(--ink-faint);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+  }
+  .caveats h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin: 0 0 12px; font-weight: 600; }
+  .caveats ul { margin: 0; padding-left: 20px; }
+  .caveats li { margin-bottom: 10px; }
+  .caveats li:last-child { margin-bottom: 0; }
+  .caveats strong { color: var(--ink); }
+
+  footer {
+    padding: 40px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+  footer code { font-size: 12.5px; }
+
+  @media (max-width: 560px) {
+    .scoreboard { flex-direction: column; align-items: flex-start; }
+    .scoreboard .readout { text-align: left; }
+    .meter { width: 56px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="eyebrow"><span class="dot"></span> Quantum computing / Grand Slam prediction</div>
+    <h1>I don't know tennis. The qubits don't either.</h1>
+    <p class="dek">A quantum circuit that had never seen a single point played encoded every Round 1 result of the 2026 US Open into qubit rotations, entangled them, and predicted Round 2 — blind. Here's how it's actually doing against the real bracket.</p>
+  </div>
+
+  <div class="scoreboard">
+    <div class="fixture">ROUND 1<span class="vs">&rarr;</span>ROUND 2</div>
+    <div class="readout">
+      <div class="num">16 / 20</div>
+      <div class="label">Decided matches called correctly &mdash; 80%, predicted before any of them were played</div>
+    </div>
+  </div>
+
+  <section>
+    <h2><span class="idx">01</span>A real circuit, not a themed spreadsheet</h2>
+    <p>Each Round 2 matchup gets its own quantum circuit. Three player-vs-player features go in &mdash; real ATP ranking, how dominant they were in Round 1, and how many sets it took them to get there &mdash; each encoded as a rotation angle on its own qubit. The bigger the edge for player A, the more that qubit's superposition leans toward representing "A is stronger."</p>
+    <p class="thesis">The circuit doesn't average three numbers into one. It <span class="hl">entangles</span> three qubits onto a fourth and reads the prediction off how that fourth qubit collapses, over 8,192 shots on Qiskit's Aer simulator.</p>
+  </section>
+
+  <section>
+    <h2><span class="idx">02</span>The circuit</h2>
+    <p>Three feature qubits, each rotated by its own <code>R<sub>y</sub>(&theta;)</code>, then chained onto a decision qubit through controlled rotations weighted by how much each feature should matter (rank 0.55, form 0.30, fatigue 0.15). All four qubits are measured; the fraction of shots where the decision qubit reads <code>1</code> is player A's win probability.</p>
+    <div class="circuit-card">
+      <svg viewBox="0 0 640 235" width="100%" style="max-width:600px">
+        <text x="10" y="35" class="mono" font-size="14" fill="var(--ink)">rank</text>
+        <line x1="60" y1="30" x2="600" y2="30" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <rect x="90" y="10" width="90" height="40" rx="6" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.3"/>
+        <text x="135" y="35" text-anchor="middle" class="mono" font-size="13" fill="var(--ink)">R<tspan baseline-shift="sub" font-size="9">y</tspan>(&theta;<tspan baseline-shift="sub" font-size="9">rank</tspan>)</text>
+        <circle cx="260" cy="30" r="5" fill="var(--ink)"/>
+
+        <text x="10" y="95" class="mono" font-size="14" fill="var(--ink)">form</text>
+        <line x1="60" y1="90" x2="600" y2="90" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <rect x="90" y="70" width="90" height="40" rx="6" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.3"/>
+        <text x="135" y="95" text-anchor="middle" class="mono" font-size="13" fill="var(--ink)">R<tspan baseline-shift="sub" font-size="9">y</tspan>(&theta;<tspan baseline-shift="sub" font-size="9">form</tspan>)</text>
+        <circle cx="350" cy="90" r="5" fill="var(--ink)"/>
+
+        <text x="10" y="155" class="mono" font-size="14" fill="var(--ink)">fatigue</text>
+        <line x1="60" y1="150" x2="600" y2="150" stroke="var(--border-strong)" stroke-width="1.5"/>
+        <rect x="90" y="130" width="90" height="40" rx="6" fill="var(--surface)" stroke="var(--border-strong)" stroke-width="1.3"/>
+        <text x="135" y="155" text-anchor="middle" class="mono" font-size="12.5" fill="var(--ink)">R<tspan baseline-shift="sub" font-size="9">y</tspan>(&theta;<tspan baseline-shift="sub" font-size="9">fat</tspan>)</text>
+        <circle cx="440" cy="150" r="5" fill="var(--ink)"/>
+
+        <text x="10" y="215" class="mono" font-size="14" fill="var(--quantum)" font-weight="600">decision</text>
+        <line x1="60" y1="210" x2="600" y2="210" stroke="var(--quantum)" stroke-width="1.5"/>
+
+        <line x1="260" y1="30" x2="260" y2="210" stroke="var(--ink)" stroke-width="1.3"/>
+        <rect x="222" y="190" width="76" height="40" rx="6" fill="var(--quantum-bg)" stroke="var(--quantum)" stroke-width="1.3"/>
+        <text x="260" y="215" text-anchor="middle" class="mono" font-size="11.5" fill="var(--quantum)" font-weight="600">CRY(.55&pi;)</text>
+
+        <line x1="350" y1="90" x2="350" y2="210" stroke="var(--ink)" stroke-width="1.3"/>
+        <rect x="312" y="190" width="76" height="40" rx="6" fill="var(--quantum-bg)" stroke="var(--quantum)" stroke-width="1.3"/>
+        <text x="350" y="215" text-anchor="middle" class="mono" font-size="11.5" fill="var(--quantum)" font-weight="600">CRY(.30&pi;)</text>
+
+        <line x1="440" y1="150" x2="440" y2="210" stroke="var(--ink)" stroke-width="1.3"/>
+        <rect x="402" y="190" width="76" height="40" rx="6" fill="var(--quantum-bg)" stroke="var(--quantum)" stroke-width="1.3"/>
+        <text x="440" y="215" text-anchor="middle" class="mono" font-size="11.5" fill="var(--quantum)" font-weight="600">CRY(.15&pi;)</text>
+
+        <g transform="translate(540,30)"><circle r="13" fill="none" stroke="var(--ink)" stroke-width="1.4"/><path d="M -8 6 A 10 10 0 0 1 8 6" fill="none" stroke="var(--ink)" stroke-width="1.4"/><line x1="0" y1="6" x2="6" y2="-6" stroke="var(--ink)" stroke-width="1.4"/></g>
+        <g transform="translate(540,90)"><circle r="13" fill="none" stroke="var(--ink)" stroke-width="1.4"/><path d="M -8 6 A 10 10 0 0 1 8 6" fill="none" stroke="var(--ink)" stroke-width="1.4"/><line x1="0" y1="6" x2="6" y2="-6" stroke="var(--ink)" stroke-width="1.4"/></g>
+        <g transform="translate(540,150)"><circle r="13" fill="none" stroke="var(--ink)" stroke-width="1.4"/><path d="M -8 6 A 10 10 0 0 1 8 6" fill="none" stroke="var(--ink)" stroke-width="1.4"/><line x1="0" y1="6" x2="6" y2="-6" stroke="var(--ink)" stroke-width="1.4"/></g>
+        <g transform="translate(540,210)"><circle r="15" fill="var(--quantum-bg)" stroke="var(--quantum)" stroke-width="1.6"/><path d="M -9 7 A 11 11 0 0 1 9 7" fill="none" stroke="var(--quantum)" stroke-width="1.6"/><line x1="0" y1="7" x2="7" y2="-7" stroke="var(--quantum)" stroke-width="1.6"/></g>
+        <text x="595" y="215" class="mono" font-size="13" fill="var(--ink-muted)">p&#770;</text>
+      </svg>
+      <div class="circuit-caption">One circuit per matchup &middot; run for 8,192 shots on Qiskit Aer &middot; measured fraction of decision-qubit&nbsp;=&nbsp;1 outcomes is the win probability.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="idx">03</span>Grading it against reality</h2>
+    <p>Predictions were made from Round 1 results only, before checking any Round 2 outcome. A few days later the real bracket (ESPN) showed 20 of the 32 Round 2 matches already decided &mdash; enough to actually grade the model. Pulling that data also caught a transcription bug on my end (I'd recorded one Round 1 result backwards); fixed, and regraded.</p>
+
+    <div class="callout">Every miss happened <strong>below 63% confidence</strong>. Every call the model made above that line &mdash; 13 in a row &mdash; was correct.</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Matchup</th><th>Predicted</th><th>Confidence</th><th>Actual winner</th><th>Result</th></tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="idx">04</span>What's real here, and what isn't</h2>
+    <div class="caveats">
+      <h3>Read before citing this anywhere</h3>
+      <ul>
+        <li><strong>The circuit is real.</strong> Superposition and entanglement, executed on Qiskit's Aer simulator &mdash; not a classical formula with a quantum-sounding name.</li>
+        <li><strong>But no quantum advantage is claimed.</strong> Because the feature qubits are only ever used as controls and nothing further acts on them afterward, the deferred-measurement principle means this circuit's output is mathematically equivalent to a classical probabilistic mixture over conditional rotations. It's a genuine quantum implementation of the feature-combination rule &mdash; it just doesn't need to be quantum to work this well.</li>
+        <li><strong>20 matches is a small sample.</strong> 80% from one partial round is an encouraging first read, not proof of a durable edge. Treat it accordingly until more rounds accumulate.</li>
+        <li><strong>ATP rankings are a single stale snapshot</strong> (dated in <code>data/atp_rankings.json</code>), not a live feed &mdash; a player's real current form may have moved since.</li>
+        <li><strong>Simulator only, and simple features.</strong> No real quantum hardware, and no head-to-head history, surface preference, or injury data factored in &mdash; just rank, Round 1 dominance, and fatigue.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div>Built on the <a href="https://github.com/Amin9666/Mens_Open_Quantum_26">Mens Open Quantum 26</a> predictor &middot; <code>src/quantum_model.py</code></div>
+    <div>Qiskit 2.2 + qiskit-aer</div>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var data = [
+      {p1:"Daniil Medvedev", p2:"Sebastian Gorzny", predicted:"Daniil Medvedev", actual:"Daniil Medvedev", confidence:94.0, correct:true},
+      {p1:"Jaime Faria", p2:"Carlos Alcaraz", predicted:"Carlos Alcaraz", actual:"Carlos Alcaraz", confidence:92.6, correct:true},
+      {p1:"Tomas Martin Etcheverry", p2:"Jacob Fearnley", predicted:"Tomas Martin Etcheverry", actual:"Tomas Martin Etcheverry", confidence:83.7, correct:true},
+      {p1:"Luciano Darderi", p2:"Dalibor Svrcina", predicted:"Luciano Darderi", actual:"Luciano Darderi", confidence:80.2, correct:true},
+      {p1:"Alexander Bublik", p2:"Adrian Mannarino", predicted:"Alexander Bublik", actual:"Alexander Bublik", confidence:76.7, correct:true},
+      {p1:"Ben Shelton", p2:"Hubert Hurkacz", predicted:"Ben Shelton", actual:"Ben Shelton", confidence:76.6, correct:true},
+      {p1:"Taylor Fritz", p2:"Mattia Bellucci", predicted:"Taylor Fritz", actual:"Taylor Fritz", confidence:73.3, correct:true},
+      {p1:"Rei Sakamoto", p2:"Frances Tiafoe", predicted:"Frances Tiafoe", actual:"Frances Tiafoe", confidence:73.3, correct:true},
+      {p1:"Dino Prizmic", p2:"Tommy Paul", predicted:"Tommy Paul", actual:"Tommy Paul", confidence:72.3, correct:true},
+      {p1:"Jiri Lehecka", p2:"Toby Samuel", predicted:"Jiri Lehecka", actual:"Jiri Lehecka", confidence:68.6, correct:true},
+      {p1:"Valentin Vacherot", p2:"Kamil Majchrzak", predicted:"Valentin Vacherot", actual:"Valentin Vacherot", confidence:66.9, correct:true},
+      {p1:"Jaume Munar", p2:"Arthur Rinderknech", predicted:"Arthur Rinderknech", actual:"Arthur Rinderknech", confidence:66.0, correct:true},
+      {p1:"Daniel Merida", p2:"Andrey Rublev", predicted:"Andrey Rublev", actual:"Daniel Merida", confidence:63.1, correct:false},
+      {p1:"Jan-Lennard Struff", p2:"Francisco Cerundolo", predicted:"Francisco Cerundolo", actual:"Francisco Cerundolo", confidence:62.4, correct:true},
+      {p1:"Denis Shapovalov", p2:"Luca Van Assche", predicted:"Denis Shapovalov", actual:"Denis Shapovalov", confidence:60.0, correct:true},
+      {p1:"Matteo Berrettini", p2:"Mariano Navone", predicted:"Matteo Berrettini", actual:"Mariano Navone", confidence:56.5, correct:false},
+      {p1:"Brandon Nakashima", p2:"Alex Michelsen", predicted:"Brandon Nakashima", actual:"Alex Michelsen", confidence:56.1, correct:false},
+      {p1:"James Duckworth", p2:"Yibing Wu", predicted:"Yibing Wu", actual:"Yibing Wu", confidence:53.0, correct:true},
+      {p1:"Lloyd Harris", p2:"Stefanos Tsitsipas", predicted:"Lloyd Harris", actual:"Stefanos Tsitsipas", confidence:50.8, correct:false},
+      {p1:"Felix Auger-Aliassime", p2:"Karen Khachanov", predicted:"Karen Khachanov", actual:"Karen Khachanov", confidence:50.4, correct:true}
+    ];
+
+    var tbody = document.getElementById('table-body');
+    data.forEach(function (d) {
+      var cls = d.correct ? 'hit' : 'miss';
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td>' + d.p1 + ' vs ' + d.p2 + '</td>' +
+        '<td>' + d.predicted + '</td>' +
+        '<td><div class="conf-cell"><div class="meter ' + cls + '"><div style="width:' + d.confidence + '%"></div></div>' + d.confidence.toFixed(1) + '%</div></td>' +
+        '<td>' + d.actual + '</td>' +
+        '<td><span class="badge ' + cls + '">' + (d.correct ? 'MATCH' : 'MISS') + '</span></td>';
+      tbody.appendChild(tr);
+    });
+  })();
+</script>
+
+</body>
+</html>
