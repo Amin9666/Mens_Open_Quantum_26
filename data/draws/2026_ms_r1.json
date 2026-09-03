@@ -64,7 +64,7 @@
     {"slot": [119,120], "p1": {"name": "Coleman Wong", "country": "HKG", "seed": null, "status": "Q"}, "p2": {"name": "Tommy Paul", "country": "USA", "seed": 20}, "winner": "p2", "score": "6-7(3) 6-1 6-3 6-3", "sets_played": 4},
     {"slot": [121,122], "p1": {"name": "Matteo Arnaldi", "country": "ITA", "seed": 30}, "p2": {"name": "James Duckworth", "country": "AUS", "seed": null}, "winner": "p2", "score": "5-7 6-3 6-2 7-6(8)", "sets_played": 4},
     {"slot": [123,124], "p1": {"name": "Yibing Wu", "country": "CHN", "seed": null}, "p2": {"name": "Adam Walton", "country": "AUS", "seed": null}, "winner": "p1", "score": "7-6(2) 6-2 7-5", "sets_played": 3},
-    {"slot": [125,126], "p1": {"name": "Jaime Faria", "country": "POR", "seed": null}, "p2": {"name": "Jenson Brooksby", "country": "USA", "seed": null}, "winner": "p2", "score": "6-3 7-6(4) 4-6 1-6 6-2", "sets_played": 5},
+    {"slot": [125,126], "p1": {"name": "Jaime Faria", "country": "POR", "seed": null}, "p2": {"name": "Jenson Brooksby", "country": "USA", "seed": null}, "winner": "p1", "score": "6-3 7-6(4) 4-6 1-6 6-2", "sets_played": 5},
     {"slot": [127,128], "p1": {"name": "Roman Safiullin", "country": null, "seed": null}, "p2": {"name": "Carlos Alcaraz", "country": "ESP", "seed": 2}, "winner": "p2", "score": "6-4 6-4 6-4", "sets_played": 3}
   ]
 }

@@ -61,11 +61,26 @@ of guessing at unseeded players' strength, the corrected model called it 50.4% i
 Khachanov's favor — essentially a coin flip, which is exactly what that match actually
 was.
 
+## Grading it against reality
+
+A few days later I pulled the live ESPN bracket data to see how the predictions were
+actually holding up — and caught a second bug in the process: I'd transcribed one
+Round 1 result backwards (had Brooksby beating Faria; it was the other way around),
+which had quietly fed the wrong player into a Round 2 matchup. Fixed the source data,
+reran everything.
+
+By that point 20 of the 32 Round 2 matches had actually been decided. The model,
+having only ever seen Round 1 results, called **16 of those 20 correctly — 80%**.
+The four misses were all closer matches (Nakashima vs. Michelsen, Merida vs. Rublev,
+Berrettini vs. Navone, Harris vs. Tsitsipas) rather than confident calls it whiffed on.
+
 ## The predictions
 
-Highest-confidence calls: Alcaraz (92%), Medvedev (94%), Learner Tien (86%), and
-Etcheverry (84%). The closest coin flips: Harris vs. Tsitsipas and
-Auger-Aliassime vs. Khachanov, both sitting right around 50%.
+Highest-confidence calls: Alcaraz (93%), Medvedev (94%), Learner Tien (86%), and
+Etcheverry (84%) — all of which turned out correct. The closest coin flips: Harris
+vs. Tsitsipas and Auger-Aliassime vs. Khachanov, both sitting right around 50%
+(one right, one wrong — which is exactly what you'd want from a well-calibrated
+coin flip).
 
 Full predictions, code, and the circuit itself:
 [github.com/Amin9666/Mens_Open_Quantum_26](https://github.com/Amin9666/Mens_Open_Quantum_26)

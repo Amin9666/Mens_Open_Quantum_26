@@ -28,8 +28,13 @@ See [`src/quantum_model.py`](src/quantum_model.py) for the circuit.
 
 ```bash
 source venv/bin/activate
-python src/predict.py data/draws/2026_ms_r1.json --out output/round2_predictions.json
+python src/predict.py data/draws/2026_ms_r1.json --out output/round2_predictions.json \
+  --known-results data/draws/2026_ms_r2_actual.json
 ```
+
+`--known-results` is optional — pass it a JSON file of already-decided next-round
+results (same shape as `data/draws/2026_ms_r2_actual.json`) to grade the
+predictions as they come in.
 
 Each week: drop in the newly completed round's results as JSON (same shape as
 `data/draws/2026_ms_r1.json`), point `predict.py` at it, and it predicts the next
@@ -47,6 +52,7 @@ reflect recent ranking moves.
 
 ## Status
 
-As of this run, Round 2 has only one completed match in the official draw sheet
-(Khachanov d. Auger-Aliassime) — the rest of these are genuine predictions, not
-backtests. `predict.py` checks any known results automatically for calibration.
+Predictions were made blind, using only Round 1 results. Checked against real
+Round 2 results (ESPN) after the fact: 20 of the 32 Round 2 matches have finished,
+and the model got **16 of 20 (80%) correct**. See `data/draws/2026_ms_r2_actual.json`
+and pass `--known-results` to `predict.py` to reproduce this check.
