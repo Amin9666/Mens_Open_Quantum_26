@@ -167,6 +167,55 @@
   }
   .callout strong { color: var(--quantum); }
 
+  /* ---------- chart ---------- */
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 20px 16px;
+    box-shadow: var(--shadow);
+    margin: 20px 0;
+  }
+  .chart-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 4px; }
+  .chart-title { font-weight: 600; font-size: 15px; }
+  .chart-sub { font-size: 13px; color: var(--ink-muted); }
+  .legend { display: flex; gap: 18px; font-size: 13px; flex-wrap: wrap; }
+  .legend .item { display: flex; align-items: center; gap: 7px; }
+  .legend .swatch { width: 14px; height: 3px; border-radius: 2px; }
+  .legend .swatch.dashed { background: none; border-top: 2px dashed var(--ink-faint); height: 0; }
+  .chart-wrap { position: relative; overflow-x: auto; }
+  #chart { width: 100%; height: auto; min-width: 520px; }
+  .axis-label { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; fill: var(--ink-faint); }
+  .gridline { stroke: var(--border); stroke-width: 1; }
+  .tick-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; fill: var(--ink-faint); }
+  .series-line { fill: none; stroke-width: 2; }
+  .series-marker { stroke-width: 2; }
+  .crosshair { stroke: var(--ink-faint); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; pointer-events: none; }
+  .hover-target { fill: transparent; cursor: crosshair; }
+  .end-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; }
+
+  .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 9px 11px;
+    border-radius: 7px;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity 0.08s ease;
+    white-space: nowrap;
+    z-index: 5;
+    box-shadow: var(--shadow);
+    max-width: 260px;
+    white-space: normal;
+  }
+  .tooltip .row { display: flex; justify-content: space-between; gap: 14px; }
+  .tooltip .row .k { opacity: 0.65; }
+  .tooltip .head { font-weight: 600; margin-bottom: 4px; opacity: 0.85; }
+
   .table-wrap { overflow-x: auto; margin-top: 22px; }
   table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 620px; }
   th, td { text-align: right; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -298,6 +347,23 @@
     <h2><span class="idx">03</span>Grading it against reality</h2>
     <p>Predictions were made from Round 1 results only, before checking any Round 2 outcome. A few days later the real bracket (ESPN) showed 20 of the 32 Round 2 matches already decided &mdash; enough to actually grade the model. Pulling that data also caught a transcription bug on my end (I'd recorded one Round 1 result backwards); fixed, and regraded.</p>
 
+    <div class="chart-card">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Accuracy if you only trust the top N most-confident calls</div>
+          <div class="chart-sub">20 graded matches, ranked by predicted confidence &middot; cumulative accuracy as lower-confidence calls are added in</div>
+        </div>
+        <div class="legend">
+          <div class="item"><span class="swatch" style="background:var(--quantum)"></span>Cumulative accuracy</div>
+          <div class="item"><span class="swatch dashed"></span>Random guess (50%)</div>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg id="chart" viewBox="0 0 680 360" role="img" aria-label="Line chart of cumulative prediction accuracy as matches are added in order of decreasing model confidence. Accuracy starts at 100% for the most confident calls and settles at 80% once all 20 graded matches are included, staying well above the 50% random-guess line throughout."></svg>
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+    </div>
+
     <div class="callout">Every miss happened <strong>below 63% confidence</strong>. Every call the model made above that line &mdash; 13 in a row &mdash; was correct.</div>
 
     <div class="table-wrap">
@@ -367,6 +433,114 @@
         '<td>' + d.actual + '</td>' +
         '<td><span class="badge ' + cls + '">' + (d.correct ? 'MATCH' : 'MISS') + '</span></td>';
       tbody.appendChild(tr);
+    });
+
+    // ---- cumulative accuracy chart ----
+    var cum = [];
+    (function () {
+      var correctSoFar = 0;
+      data.forEach(function (d, i) {
+        correctSoFar += d.correct ? 1 : 0;
+        cum.push({ n: i + 1, acc: (correctSoFar / (i + 1)) * 100, label: d.p1 + ' vs ' + d.p2, hit: d.correct });
+      });
+    })();
+
+    var svg = document.getElementById('chart');
+    var W = 680, H = 360;
+    var M = { top: 18, right: 26, bottom: 40, left: 46 };
+    var plotW = W - M.left - M.right;
+    var plotH = H - M.top - M.bottom;
+
+    var nMin = 1, nMax = cum.length;
+    var accMin = 40, accMax = 105;
+
+    function x(n) { return M.left + (n - nMin) / (nMax - nMin) * plotW; }
+    function y(a) { return M.top + plotH - (a - accMin) / (accMax - accMin) * plotH; }
+
+    var svgns = 'http://www.w3.org/2000/svg';
+    function el(tag, attrs) {
+      var e = document.createElementNS(svgns, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+
+    [50, 60, 70, 80, 90, 100].forEach(function (v) {
+      var yy = y(v);
+      svg.appendChild(el('line', { x1: M.left, x2: W - M.right, y1: yy, y2: yy, class: 'gridline' }));
+      var t = el('text', { x: M.left - 8, y: yy + 3, class: 'tick-label', 'text-anchor': 'end' });
+      t.textContent = v + '%';
+      svg.appendChild(t);
+    });
+    [1, 5, 10, 15, 20].forEach(function (v) {
+      var xx = x(v);
+      var t = el('text', { x: xx, y: M.top + plotH + 18, class: 'tick-label', 'text-anchor': 'middle' });
+      t.textContent = v;
+      svg.appendChild(t);
+    });
+
+    svg.appendChild(el('text', { x: M.left + plotW / 2, y: H - 4, class: 'axis-label', 'text-anchor': 'middle' })).textContent = 'matches included, ordered by confidence (most confident first) →';
+    var ylab = el('text', { x: 12, y: M.top + plotH / 2, class: 'axis-label', 'text-anchor': 'middle', transform: 'rotate(-90, 12, ' + (M.top + plotH / 2) + ')' });
+    ylab.textContent = 'cumulative accuracy →';
+    svg.appendChild(ylab);
+
+    var quantumColor = getComputedStyle(document.documentElement).getPropertyValue('--quantum').trim() || '#2166ac';
+    var hitColor = getComputedStyle(document.documentElement).getPropertyValue('--hit').trim() || '#1f7a4d';
+    var missColor = getComputedStyle(document.documentElement).getPropertyValue('--miss').trim() || '#ab3b3b';
+    var surfaceColor = getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#fff';
+    var faintColor = getComputedStyle(document.documentElement).getPropertyValue('--ink-faint').trim() || '#8b9a91';
+
+    // random-guess reference line
+    var randomY = y(50);
+    var randomLine = el('line', { x1: M.left, x2: W - M.right, y1: randomY, y2: randomY, stroke: faintColor, 'stroke-width': 1.5, 'stroke-dasharray': '5 4' });
+    svg.appendChild(randomLine);
+
+    var pts = cum.map(function (d) { return [x(d.n), y(d.acc)]; });
+    var path = 'M ' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L ');
+    svg.appendChild(el('path', { d: path, class: 'series-line', stroke: quantumColor }));
+
+    cum.forEach(function (d, i) {
+      svg.appendChild(el('circle', {
+        cx: pts[i][0], cy: pts[i][1], r: 4.5, class: 'series-marker',
+        stroke: d.hit ? hitColor : missColor, fill: surfaceColor, 'data-i': i
+      }));
+    });
+
+    var endLabel = el('text', { x: pts[pts.length - 1][0] - 8, y: pts[pts.length - 1][1] - 12, class: 'end-label', fill: quantumColor, 'text-anchor': 'end' });
+    endLabel.textContent = '80% final';
+    svg.appendChild(endLabel);
+
+    // crosshair + hover
+    var crosshair = el('line', { class: 'crosshair', y1: M.top, y2: M.top + plotH });
+    svg.appendChild(crosshair);
+
+    var tooltip = document.getElementById('tooltip');
+    var chartWrap = svg.parentElement;
+
+    cum.forEach(function (d, i) {
+      var hx = pts[i][0];
+      var target = el('rect', { x: Math.max(M.left, hx - 16), y: M.top, width: 32, height: plotH, class: 'hover-target' });
+      target.addEventListener('mouseenter', function () {
+        crosshair.setAttribute('x1', hx);
+        crosshair.setAttribute('x2', hx);
+        crosshair.style.opacity = 1;
+        tooltip.innerHTML =
+          '<div class="head">#' + d.n + ' &middot; ' + d.label + '</div>' +
+          '<div class="row"><span class="k">this call</span><span>' + (d.hit ? 'correct' : 'miss') + '</span></div>' +
+          '<div class="row"><span class="k">cumulative accuracy</span><span>' + d.acc.toFixed(1) + '%</span></div>';
+        tooltip.style.opacity = 1;
+        var rect = svg.getBoundingClientRect();
+        var wrapRect = chartWrap.getBoundingClientRect();
+        var scale = rect.width / W;
+        var left = (hx * scale) + (rect.left - wrapRect.left) + 14;
+        var top = (pts[i][1] * scale) + (rect.top - wrapRect.top) - 10;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+      });
+      target.addEventListener('mouseleave', function () {
+        crosshair.style.opacity = 0;
+        tooltip.style.opacity = 0;
+      });
+      svg.appendChild(target);
     });
   })();
 </script>
